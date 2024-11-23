@@ -1,4 +1,3 @@
-
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 import json
@@ -6,13 +5,32 @@ from openai import OpenAI
 import os
 import requests
 import time
+import re
 
 load_dotenv()
 
+def add_paragraphs(text, method='sentences', sentences_per_para=3):
+   if method == 'sentences':
+       sentences = re.split(r'(?<=\.)\s+', text)
+
+       paragraphs = []
+       current_para = []
+
+       for i, sentence in enumerate(sentences, 1):
+           current_para.append(sentence)
+           if i % sentences_per_para == 0:
+               paragraphs.append(' '.join(current_para))
+               current_para = []
+
+       if current_para:
+           paragraphs.append(' '.join(current_para))
+
+       return '\n\n'.join(paragraphs)
+
+   elif method == 'semicolon':
+       return text.replace('; ', '.\n\n')
+
 def scrape_and_save():
-   # Scrape the text from the URL and save it to a JSON file
-   # Choose the right one for your use case
-   # You may need to adapt html markers to your specific case
    url = "https://an_url_where_text_is_located.com"
 
    response = requests.get(url)
@@ -28,7 +46,7 @@ def scrape_and_save():
        if paragraphs[i].find('b'):
            current_entry = {
                "title": paragraphs[i].find('b').text,
-               "content_latin": paragraphs[i+1].text.strip(),
+               "content_latin": add_paragraphs(paragraphs[i+1].text.strip(), method='sentences', sentences_per_para=2),
                "content_german": "",
                "translation_notes": ""
            }
@@ -40,9 +58,7 @@ def scrape_and_save():
 
    print("Data saved to hyginus.json")
 
-
 def translate_entries():
-
    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
    with open('hyginus.json', 'r', encoding='utf-8') as f:
@@ -52,7 +68,6 @@ def translate_entries():
        prompt = f"Translate this Latin text to German. Preserve the original meaning and style:\n\n{entry['content_latin']}"
        print("Translating:", entry['title'])
        try:
-
            response = client.chat.completions.create(
                messages=[
                    {
@@ -60,18 +75,17 @@ def translate_entries():
                        "content": prompt,
                    }
                ],
-               model="gpt-4o",
+               model="gpt-4",
            )
 
-           entry['content_german'] = response.choices[0].message.content
-           time.sleep(1)  # Rate limiting
-
-
+           entry['content_german'] = add_paragraphs(response.choices[0].message.content,
+                                                  method='sentences',
+                                                  sentences_per_para=2)
+           time.sleep(1)
 
        except Exception as e:
            print(f"Error translating {entry['title']}: {e}")
 
-   # Sort data by title
    sorted_data = sorted(data, key=lambda x: x['title'])
 
    with open('hyginus_translated.json', 'w', encoding='utf-8') as f:
@@ -80,5 +94,3 @@ def translate_entries():
 if __name__ == "__main__":
    scrape_and_save()
    translate_entries()
-
-

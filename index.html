@@ -192,10 +192,10 @@
                 storyDiv.id = entry.title;
                 storyDiv.innerHTML = `
                         <h2>${entry.title.toLowerCase().replace(/\b\w/g, l => l.toUpperCase())}</h2>
-                        <div class="text-container">
-                            <div class="latin">${entry.content_latin}</div>
-                            <div class="german">${entry.content_german}</div>
-                        </div>
+                         <div class="text-container">
+                           <div class="latin">${entry.content_latin.replace(/\n\n/g, '<br><br>')}</div>
+                           <div class="german">${entry.content_german.replace(/\n\n/g, '<br><br>')}</div>
+                         </div>
                     `;
                 container.appendChild(storyDiv);
             });

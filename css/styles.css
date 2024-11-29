@@ -4,6 +4,8 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 20px;
+    min-width: 320px;
+    overflow-x: hidden;
 }
 
 /* Hamburger Menu Styles */
@@ -78,13 +80,16 @@ body {
 }
 
 .container {
-    max-width: 1200px;
-    margin: 20px auto;
-    background: #fff;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 20px auto !important;
     padding: 30px;
+    background: #fff;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
     border-radius: 8px;
+    box-sizing: border-box;
 }
+
 
 .text-container {
     display: grid;
@@ -127,6 +132,71 @@ h2 {
     background-color: #fff7b3;  /* Light yellow background */
     text-decoration: none;  /* Remove the underline */
 }
+
+.story-title.clickable {
+    cursor: pointer;
+}
+
+.story-title.clickable:hover {
+    color: #6b3410;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.7);
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 50px auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 5px;
+    overflow-y: auto;
+}
+
+.modal-open {
+    overflow: hidden;
+    padding-right: 15px; /* Compensate for scrollbar */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    color: black;
+}
+
+.story-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.info-icon {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.info-icon:hover {
+    transform: scale(1.1);
+}
+
 
 /* Mobile Styles */
 @media (max-width: 768px) {
